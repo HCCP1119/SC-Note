@@ -1,0 +1,54 @@
+server:
+  port: 9200
+
+spring:
+  application:
+    name: cloudnote-gateway
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+      routes:
+        - id: routh1
+          uri: lb://cloudnote-auth
+          predicates:
+            - Path=/auth/**
+      filter:
+        remove-hop-by-hop:
+          headers:
+            - access-control-allow-origin
+      globalcors:
+        cors-configurations:
+          "[/**]":
+            allowedOrigins: "*"
+            allowedHeaders: "*"
+            allowedMethods: "*"
+    nacos:
+      discovery:
+        # 服务注册地址
+        server-addr: 192.168.1.129:8848
+      config:
+        # 服务注册地址
+        server-addr: 192.168.1.129:8848
+        # 配置文件格式
+        file-extension: yml
+    sentinel:
+      transport:
+        # 控制台地址
+        dashboard: 192.168.1.129:8718
+      # nacos配置持久化
+#      datasource:
+#        ds1:
+#          nacos:
+#            server-addr: 192.168.1.129:8848
+#            dataId: sentinel-ruoyi-gateway
+#            groupId: DEFAULT_GROUP
+#            data-type: json
+#            rule-type: flow
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"

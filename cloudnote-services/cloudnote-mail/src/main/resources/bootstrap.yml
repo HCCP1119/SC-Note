@@ -1,0 +1,17 @@
+server:
+  port: 8002
+spring:
+  application:
+    name: cloudnote-mail
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 192.168.1.129:8848
+      config:
+        server-addr: 192.168.1.129:8848
+        file-extension: yml
+        namespace: a7345f82-1c61-4004-a81a-7abf8996979b
+
+    sentinel:
+      transport:
+        dashboard: 192.168.1.129:8719
