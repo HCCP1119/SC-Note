@@ -30,6 +30,7 @@ public class DefaultSecurityConfig {
         protected void configure(HttpSecurity http) throws Exception {
             //采取token验证，关闭csrf验证
             http.csrf().disable();
+            http.sessionManagement().disable();
             //设置跨域
             http.cors();
             http
@@ -40,7 +41,7 @@ public class DefaultSecurityConfig {
                                     R.fail(HttpStatus.FORBIDDEN, e.getMessage()), response
                             )
                     )
-                    //没有权限处理方式
+                    //验证失败处理方式
                     .authenticationEntryPoint((request, response, e) ->
                             RUtils.toResponse(
                                     R.fail(HttpStatus.UNAUTHORIZED, e.getMessage()), response

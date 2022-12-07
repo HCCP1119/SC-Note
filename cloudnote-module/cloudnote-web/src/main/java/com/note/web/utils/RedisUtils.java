@@ -7,7 +7,6 @@ import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Component;
 
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -24,6 +23,8 @@ public class RedisUtils {
     public static final String ROLE_SUF = "_ROLE";
 
     public static final String PERMISSION_SUF="_PERMISSION";
+
+    public static final String MAILCODE_SUF = "_MAILCODE";
 
     @Autowired
     private RedisTemplate redisTemplate;
@@ -152,5 +153,8 @@ public class RedisUtils {
         return redisTemplate.delete(keys) > 0;
     }
 
+    public void incrByKey(final String key){
+        redisTemplate.opsForValue().increment(key,1);
+    }
 
 }

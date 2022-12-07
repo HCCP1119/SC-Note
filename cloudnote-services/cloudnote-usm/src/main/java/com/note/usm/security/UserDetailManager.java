@@ -26,7 +26,7 @@ public class UserDetailManager implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        SysUser user = userMapper.findByUsername(username);
+        SysUser user = userMapper.findByUsernameOrEmail(username,username);
         if (user==null){
             throw new UsernameNotFoundException("用户不存在");
         }

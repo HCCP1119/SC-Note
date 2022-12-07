@@ -11,7 +11,7 @@ spring:
           enabled: true
       routes:
         - id: routh1
-          uri: lb://cloudnote-auth
+          uri: lb://cloudnote-ums
           predicates:
             - Path=/auth/**
       filter:
@@ -33,19 +33,6 @@ spring:
         server-addr: 192.168.1.129:8848
         # 配置文件格式
         file-extension: yml
-    sentinel:
-      transport:
-        # 控制台地址
-        dashboard: 192.168.1.129:8718
-      # nacos配置持久化
-#      datasource:
-#        ds1:
-#          nacos:
-#            server-addr: 192.168.1.129:8848
-#            dataId: sentinel-ruoyi-gateway
-#            groupId: DEFAULT_GROUP
-#            data-type: json
-#            rule-type: flow
 
 management:
   endpoints:

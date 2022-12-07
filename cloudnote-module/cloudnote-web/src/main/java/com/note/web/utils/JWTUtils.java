@@ -14,7 +14,7 @@ import java.util.Date;
  **/
 public class JWTUtils {
     private final static String key = TokenConstants.SECRET;
-    private final static long expTime = 60 * 60 * 24 * 7 * 1000;
+    private final static long expTime = 60 * 60 * 12 * 1000;
 
     public static String createToken(String username) {
         return Jwts.builder()
@@ -34,4 +34,5 @@ public class JWTUtils {
     public static Claims parToken(String token) {
         return Jwts.parser().setSigningKey(key).parseClaimsJws(token).getBody();
     }
+
 }

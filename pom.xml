@@ -26,6 +26,7 @@
         <mybatis-plus.version>3.5.2</mybatis-plus.version>
         <jwt.version>0.9.1</jwt.version>
         <json.version>20170516</json.version>
+        <huto.version>5.7.16</huto.version>
     </properties>
 
     <dependencyManagement>
@@ -62,6 +63,11 @@
                 <groupId>org.json</groupId>
                 <artifactId>json</artifactId>
                 <version>${json.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>cn.hutool</groupId>
+                <artifactId>hutool-core</artifactId>
+                <version>${huto.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

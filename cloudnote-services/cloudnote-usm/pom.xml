@@ -30,6 +30,7 @@
             <artifactId>mysql-connector-java</artifactId>
         </dependency>
 
+        <!-- web -->
         <dependency>
             <groupId>org.example</groupId>
             <artifactId>cloudnote-web</artifactId>

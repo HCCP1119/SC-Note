@@ -1,6 +1,6 @@
 package com.note.usm.config;
 
-import com.note.usm.filter.VerifyFilter;
+//import com.note.usm.filter.VerifyFilter;
 import com.note.usm.handler.AuthenticationHandler;
 import com.note.usm.mapper.UserMapper;
 import com.note.usm.security.UserDetailManager;
@@ -12,6 +12,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
 /**
  * Spring Security 配置
@@ -29,19 +30,13 @@ public class SecurityConfig extends SecurityConfigAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         super.configure(http);
-        http.authorizeRequests()
-                .antMatchers("/login").permitAll()
-                .antMatchers("/register").permitAll()
-                .anyRequest().permitAll();
+        http.authorizeRequests().anyRequest().permitAll();
         http.formLogin()
+                .loginProcessingUrl("/auth/login")
                 //验证成功处理器
                 .successHandler(this.authenticationHandler)
                 //验证失败处理器
-                .failureHandler(this.authenticationHandler)
-                .and()
-                //添加验证认证过滤器
-                .addFilter(new VerifyFilter(authenticationManagerBean(), redisServer));
-        //注销成功处理器
+                .failureHandler(this.authenticationHandler);
         http.logout().logoutSuccessHandler(this.authenticationHandler);
     }
 
@@ -49,12 +44,6 @@ public class SecurityConfig extends SecurityConfigAdapter {
     @Override
     public UserDetailsService userDetailsService(){
         return new UserDetailManager(this.userMapper,this.redisServer);
-    }
-
-    @Bean
-    @Override
-    public AuthenticationManager authenticationManagerBean() throws Exception {
-        return super.authenticationManagerBean();
     }
 
 }

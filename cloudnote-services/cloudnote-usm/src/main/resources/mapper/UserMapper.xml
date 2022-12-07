@@ -5,7 +5,7 @@
 <mapper namespace="com.note.usm.mapper.UserMapper">
     <resultMap id="userMap" type="com.note.api.entity.SysUser">
         <id property="id" column="id"/>
-        <result property="createTime" column="createTime"/>
+        <result property="createTime" column="create_time"/>
         <result property="email" column="email"/>
         <result property="nickname" column="nickname"/>
         <result property="username" column="username"/>
@@ -24,22 +24,28 @@
                     column="{rid=id}" select="findPermissionByRid"/>
     </resultMap>
 
-    <select id="findByUsername" parameterType="String" resultMap="userMap">
+    <!-- 根据用户名查询用户 -->
+
+    <select id="findByUsernameOrEmail" parameterType="String" resultMap="userMap">
         select *
         from sys_user
-        where username = #{username}
+        where username = #{username} or email = #{email}
     </select>
 
-    <select id="findRoleByUid"  resultMap="roleMap">
+    <select id="findRoleByUid" resultMap="roleMap">
         select *
         from sys_role
         where id in (select role_id from user_role where user_id = #{uid})
     </select>
 
-    <select id="findPermissionByRid"  resultType="String">
+    <select id="findPermissionByRid" resultType="String">
         select `name`
         from sys_permission
         where id in (select permission_id from role_permission where role_id = #{rid})
     </select>
 
+    <!-- 判断邮箱是否存在 -->
+    <select id="hasEmail" parameterType="String" resultType="Boolean">
+        select count(sys_user.email=#{email} or sys_user.username=#{username} or null) from sys_user
+    </select>
 </mapper>

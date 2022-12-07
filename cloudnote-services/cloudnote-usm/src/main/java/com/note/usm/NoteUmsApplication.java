@@ -3,6 +3,7 @@ package com.note.usm;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
+import org.springframework.cloud.openfeign.EnableFeignClients;
 
 /**
  * 用户管理中心
@@ -12,6 +13,7 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 
 @SpringBootApplication
 @EnableDiscoveryClient
+@EnableFeignClients
 public class NoteUmsApplication {
     public static void main(String[] args) {
         SpringApplication.run(NoteUmsApplication.class, args);

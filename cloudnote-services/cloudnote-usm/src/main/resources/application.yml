@@ -4,3 +4,12 @@ server:
 spring:
   application:
     name: cloudnote-ums
+
+feign:
+  client:
+    config:
+      default:
+        # 建立连接时间
+        ConnectTimeout: 70000
+        # 读取可用资源时间
+        ReadTimeout: 70000

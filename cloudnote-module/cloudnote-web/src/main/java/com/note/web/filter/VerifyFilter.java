@@ -1,15 +1,16 @@
-package com.note.usm.filter;
+package com.note.web.filter;
 
 import com.note.api.constant.TokenConstants;
 import com.note.web.utils.JWTUtils;
 import com.note.web.utils.RedisUtils;
 import io.jsonwebtoken.Claims;
+import lombok.RequiredArgsConstructor;
 import org.json.JSONException;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -24,21 +25,18 @@ import java.util.stream.Stream;
  *
  * @date 2022/11/29 21:12
  **/
-public class VerifyFilter extends BasicAuthenticationFilter {
+@RequiredArgsConstructor
+@Component
+public class VerifyFilter extends OncePerRequestFilter {
 
     private final RedisUtils redisServer;
 
-    public VerifyFilter(AuthenticationManager authenticationManager, RedisUtils redisServer) {
-        super(authenticationManager);
-        this.redisServer = redisServer;
-    }
-
-
-    public void doFilterInternal(
+    @Override
+    protected void doFilterInternal(
             HttpServletRequest request,
             HttpServletResponse response,
             FilterChain chain
-    ) throws IOException, ServletException {
+    ) throws ServletException, IOException {
         String header = request.getHeader(TokenConstants.AUTHENTICATION);
         if (header == null || !header.startsWith(TokenConstants.PREFIX)) {
             chain.doFilter(request, response);
@@ -64,8 +62,8 @@ public class VerifyFilter extends BasicAuthenticationFilter {
             chain.doFilter(request, response);
         } catch (JSONException e) {
             e.printStackTrace();
+            chain.doFilter(request, response);
         }
-        super.doFilterInternal(request, response, chain);
     }
 }
 
