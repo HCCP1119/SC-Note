@@ -1,11 +1,18 @@
 package com.note.web.filter;
 
+import com.note.api.constant.HttpStatus;
 import com.note.api.constant.TokenConstants;
+import com.note.api.result.R;
+import com.note.api.utils.RUtils;
 import com.note.web.utils.JWTUtils;
 import com.note.web.utils.RedisUtils;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.SignatureException;
 import lombok.RequiredArgsConstructor;
 import org.json.JSONException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -47,8 +54,8 @@ public class VerifyFilter extends OncePerRequestFilter {
         try {
             Claims claims = JWTUtils.parToken(token);
             String username = claims.getSubject();
-            List<String> roles = redisServer.getList(username + RedisUtils.ROLE_SUF);
-            List<String> permissions = redisServer.getList(username + RedisUtils.PERMISSION_SUF);
+            List<String> roles = redisServer.getList(username.toUpperCase() + RedisUtils.ROLE_SUF);
+            List<String> permissions = redisServer.getList(username.toUpperCase() + RedisUtils.PERMISSION_SUF);
             UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                     username,
                     null,
@@ -59,9 +66,24 @@ public class VerifyFilter extends OncePerRequestFilter {
                     ));
             //权限写入上下文
             SecurityContextHolder.getContext().setAuthentication(authentication);
+            //刷新令牌
+            if(JWTUtils.isRefresh(token)){
+                String newToken = JWTUtils.refreshToken(token);
+                response.addHeader("new-token",TokenConstants.PREFIX + newToken);
+                response.addHeader("Access-Control-Expose-Headers", "new-token");
+            }
             chain.doFilter(request, response);
-        } catch (JSONException e) {
+        }catch (SignatureException e){
+            RUtils.toResponse(R.fail("签名被篡改"),response);
+        }catch (ExpiredJwtException e){
+            RUtils.toResponse(R.fail(HttpStatus.UNAUTHORIZED,"登录已过期"),response);
+        }catch (MalformedJwtException e){
+            RUtils.toResponse(R.fail("无效令牌"),response);
+        }catch (JSONException e) {
             e.printStackTrace();
+            chain.doFilter(request, response);
+        }catch (Exception e){
+           // RUtils.toResponse(R.fail("解析失败"),response);
             chain.doFilter(request, response);
         }
     }

@@ -1,5 +1,6 @@
 package com.note.api.entity;
 import com.baomidou.mybatisplus.annotation.*;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -21,6 +22,7 @@ public class SysRole {
     private Long id;
     private String name;
     @TableField(fill = FieldFill.INSERT)
+    @JsonFormat(pattern = "yyyy/MM/dd HH:mm:ss",timezone = "GMT+8")
     private Date createTime;
     private String description;
     private Boolean status;

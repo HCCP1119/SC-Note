@@ -28,7 +28,7 @@ public class R<T> implements Serializable {
     }
 
     public static <T> R<T> fail(){
-        return restResult(null,SUCCESS,null);
+        return restResult(null,FAIL,null);
     }
 
     public static <T> R<T> fail(String msg){

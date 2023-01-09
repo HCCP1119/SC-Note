@@ -1,0 +1,6 @@
+server:
+  port: 8003
+
+spring:
+  application:
+    name: cloudnote-note

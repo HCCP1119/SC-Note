@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.note.workspace.mapper.WorkspaceMapper">
+    <resultMap id="workspaceMap" type="com.note.workspace.entity.Workspace">
+        <id property="id" column="id"/>
+        <result property="createTime" column="create_time"/>
+        <result property="label" column="label"/>
+        <result property="type" column="type"/>
+        <result property="edit" column="edit"/>
+        <result property="icon" column="icon"/>
+        <result property="uid" column="uid"/>
+        <collection property="children" ofType="com.note.workspace.entity.Folder" javaType="java.util.List" column="id" select="com.note.workspace.mapper.FolderMapper.getTree"/>
+    </resultMap>
+    <select id="getTree" resultMap="workspaceMap">
+        select * from workspace ORDER BY create_time ASC;
+    </select>
+
+    <update id="rename" parameterType="String">
+        update workspace set label=#{label} where id=#{id}
+    </update>
+</mapper>

@@ -10,10 +10,11 @@ spring:
         locator:
           enabled: true
       routes:
-        - id: routh1
-          uri: lb://cloudnote-ums
+        - id: usm
+          uri: lb://cloudnote-tsc
           predicates:
-            - Path=/auth/**
+            - Path=/**
+
       filter:
         remove-hop-by-hop:
           headers:

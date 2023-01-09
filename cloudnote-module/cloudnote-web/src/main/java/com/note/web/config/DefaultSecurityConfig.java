@@ -3,12 +3,9 @@ package com.note.web.config;
 import com.note.api.constant.HttpStatus;
 import com.note.api.result.R;
 import com.note.api.utils.RUtils;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 /**
  * 默认安全配置
@@ -17,12 +14,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
  **/
 @Configuration
 public class DefaultSecurityConfig {
-
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-
 
     public static class SecurityConfigAdapter extends WebSecurityConfigurerAdapter {
 
