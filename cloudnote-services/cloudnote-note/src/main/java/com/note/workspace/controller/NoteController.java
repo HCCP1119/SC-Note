@@ -1,12 +1,11 @@
 package com.note.workspace.controller;
 
-
-
-
 import cn.hutool.core.util.IdUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.note.api.result.R;
 import com.note.workspace.entity.Folder;
 import com.note.workspace.entity.Note;
+import com.note.workspace.entity.SearchCondition;
 import com.note.workspace.entity.Workspace;
 import com.note.workspace.mapper.FolderMapper;
 import com.note.workspace.mapper.NoteMapper;
@@ -108,5 +107,27 @@ public class NoteController {
     public R<?> getNote(@PathVariable("id") String id){
         Note note = noteMapper.selectById(id);
         return R.ok(note,"success");
+    }
+
+    @PostMapping("/search")
+    public R<?> search(@RequestBody SearchCondition condition){
+        QueryWrapper<Note> wrapper = new QueryWrapper<>();
+        if (condition.getValue()!=null){
+            wrapper.like("title",condition.getValue());
+        }
+        if (condition.getCreateStart()!=null){
+            wrapper.between("create_time",condition.getCreateStart(),condition.getCreateEnd());
+        }
+        if (condition.getUpdateStart()!=null){
+            wrapper.between("update_time",condition.getUpdateStart(),condition.getUpdateEnd());
+        }
+        if (condition.getSortType().equals("ASC")){
+            wrapper.orderByAsc("title");
+        }
+        if (condition.getSortType().equals("DESC")){
+            wrapper.orderByDesc("title");
+        }
+        List<Note> notes = noteMapper.selectList(wrapper);
+        return R.ok(notes,"success");
     }
 }

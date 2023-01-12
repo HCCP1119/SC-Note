@@ -2,6 +2,8 @@ package com.note.workspace.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.note.workspace.entity.Folder;
+import com.note.workspace.entity.Note;
+import com.note.workspace.entity.SearchCondition;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 

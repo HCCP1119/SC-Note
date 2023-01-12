@@ -35,4 +35,5 @@ public class File {
         this.userId = userId;
         this.contentType = contentType;
     }
+
 }

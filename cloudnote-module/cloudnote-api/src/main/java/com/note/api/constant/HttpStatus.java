@@ -17,6 +17,10 @@ public class HttpStatus {
      */
     public static final Integer FORBIDDEN = 403;
 
+    /**
+     * 未找到
+     */
+    public static final Integer NOT_FOUND = 404;
 
     /**
      * 未授权

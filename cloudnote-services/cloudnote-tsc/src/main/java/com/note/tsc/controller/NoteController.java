@@ -71,4 +71,10 @@ public class NoteController {
     public R<?> getNote(@PathVariable("id") String id){
         return noteService.getNote(id);
     }
+
+    @PostMapping("/search")
+    @PreAuthorize("hasRole('USER')")
+    public R<?> search(@RequestBody Object condition){
+        return noteService.search(condition);
+    }
 }

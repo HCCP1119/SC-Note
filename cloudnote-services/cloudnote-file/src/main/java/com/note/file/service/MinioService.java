@@ -2,17 +2,13 @@ package com.note.file.service;
 
 import cn.hutool.core.util.IdUtil;
 import com.note.file.Properties.MinioProperties;
-import io.minio.MinioClient;
-import io.minio.PutObjectArgs;
-import io.minio.RemoveObjectArgs;
-import io.minio.errors.*;
+import io.minio.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
+import java.util.Objects;
+
 
 /**
  * MinioService
@@ -28,7 +24,7 @@ public class MinioService {
 
     public String upload(MultipartFile file) {
         String originalFilename = file.getOriginalFilename();
-        String fileName = IdUtil.simpleUUID() + originalFilename.substring(originalFilename.lastIndexOf("."));
+        String fileName = IdUtil.simpleUUID() + Objects.requireNonNull(originalFilename).substring(originalFilename.lastIndexOf("."));
         try {
             PutObjectArgs args = PutObjectArgs
                     .builder()
@@ -38,10 +34,19 @@ public class MinioService {
                     .contentType(file.getContentType())
                     .build();
             client.putObject(args);
+            return "http://192.168.1.128:9000/" + properties.getBucket() + "/" + fileName;
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new RuntimeException("上传失败");
         }
-        return "http://192.168.1.128:9000/" + properties.getBucket() + "/" + fileName;
+    }
+
+    public GetObjectResponse download(String path){
+        try {
+            GetObjectArgs args =GetObjectArgs.builder().bucket(properties.getBucket()).object(path).build();
+            return client.getObject(args);
+        } catch (Exception e) {
+            throw new RuntimeException("获取文件失败");
+        }
     }
 
     public void removeFile(String disk){
@@ -53,7 +58,7 @@ public class MinioService {
                     .build();
             client.removeObject(args);
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new RuntimeException("删除失败");
         }
     }
 }

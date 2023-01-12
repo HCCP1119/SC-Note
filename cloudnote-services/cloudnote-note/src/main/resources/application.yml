@@ -4,3 +4,7 @@ server:
 spring:
   application:
     name: cloudnote-note
+
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl

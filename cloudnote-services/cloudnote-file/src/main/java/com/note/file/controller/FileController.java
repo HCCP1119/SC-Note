@@ -1,17 +1,26 @@
 package com.note.file.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.note.api.constant.HttpStatus;
 import com.note.api.result.R;
 import com.note.file.entity.File;
 import com.note.file.mapper.FileMapper;
 import com.note.file.mapper.UserInfoMapper;
 import com.note.file.service.MinioService;
+import io.minio.GetObjectResponse;
 import io.minio.MinioClient;
+import io.minio.RemoveObjectArgs;
 import lombok.RequiredArgsConstructor;
+import okhttp3.Headers;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.FileOutputStream;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
@@ -83,4 +92,42 @@ public class FileController {
         return R.ok(files,"success");
     }
 
+    @GetMapping("/download")
+    public ResponseEntity<?> download(@RequestParam("id") Long id,@RequestParam("disk") String disk){
+        QueryWrapper<File> wrapper = new QueryWrapper<>();
+        wrapper.eq("disk",disk).and(i -> i.eq("user_id",id));
+        File file = fileMapper.selectOne(wrapper);
+        if (Objects.isNull(file)){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(R.fail(HttpStatus.NOT_FOUND,"指定文件不存在"));
+        }
+        String path = disk.substring(disk.lastIndexOf("/")+1);
+        try {
+            final GetObjectResponse response = service.download(path);
+            String[] type = Objects.requireNonNull(response.headers().get("content-type")).split("/");
+            final HttpHeaders headers = new HttpHeaders();
+            headers.add("Content-Disposition", String.format("attachment;filename=\"%s\"", path));
+            headers.add("Cache-Control", "no-cache,no-store,must-revalidate");
+            headers.add("Pragma", "no-cache");
+            headers.add("Expires", "0");
+            headers.setContentType(new MediaType(type[0],type[1]));
+            headers.setContentLength(file.getSize());
+            return ResponseEntity.ok().headers(headers).body(new InputStreamResource(response));
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.FAIL).body(R.fail(HttpStatus.FAIL,"获取文件异常"));
+        }
+    }
+
+    @DeleteMapping("/remove")
+    public R<?> getByOrder(@RequestParam("disk") String disk,@RequestParam("id") Long id){
+        String path = disk.substring(disk.lastIndexOf("/")+1);
+        try {
+            service.removeFile(path);
+            QueryWrapper<File> wrapper = new QueryWrapper<>();
+            wrapper.eq("disk",disk).and(i -> i.eq("user_id",id));
+            fileMapper.delete(wrapper);
+            return getFiles(id);
+        }catch (Exception e){
+            return R.fail("服务器异常");
+        }
+    }
 }

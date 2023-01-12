@@ -39,4 +39,7 @@ public interface NoteService {
 
     @GetMapping("/getNote/{id}")
     R<?> getNote(@PathVariable("id") String id);
+
+    @PostMapping("/search")
+    R<?> search(@RequestBody Object condition);
 }

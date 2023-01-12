@@ -10,4 +10,5 @@ public interface NoteMapper extends BaseMapper<Note> {
 
     @Update("update note set content=#{content},title=#{title} where id=#{id}")
     void updateNote(Note note);
+
 }

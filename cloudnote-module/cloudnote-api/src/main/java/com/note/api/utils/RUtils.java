@@ -15,8 +15,8 @@ import java.io.IOException;
 public class RUtils {
     private static final ObjectMapper mapper = new ObjectMapper();
     public RUtils() {
-    }
 
+    }
     public static <T> void toResponse(R<T> r, final HttpServletResponse response)
             throws IOException{
         response.setContentType("application/json;charset=utf-8");
