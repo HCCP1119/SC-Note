@@ -31,11 +31,13 @@ public class Note {
     @JsonFormat(pattern = "yyyy/MM/dd HH:mm:ss",timezone = "GMT+8")
     private Date updateTime;
     private String parentId;
+    private Long uid;
 
-    public Note(String id, String content, String title, String parentId) {
+    public Note(String id, String content, String title, String parentId,Long uid) {
         this.id = id;
         this.content = content;
         this.title = title;
         this.parentId = parentId;
+        this.uid = uid;
     }
 }

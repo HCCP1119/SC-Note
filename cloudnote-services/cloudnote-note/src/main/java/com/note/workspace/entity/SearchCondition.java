@@ -44,4 +44,9 @@ public class SearchCondition {
      * 最后修改时间（结束）
      */
     private Date updateEnd;
+
+    /**
+     * 用户id
+     */
+    private Long userId;
 }

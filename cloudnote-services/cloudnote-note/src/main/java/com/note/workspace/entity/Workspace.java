@@ -2,6 +2,7 @@ package com.note.workspace.entity;
 
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
@@ -29,7 +30,10 @@ public class Workspace {
     private String type;
     @TableField("isEdit")
     private Boolean isEdit;
+    @TableLogic
+    private Integer deleted;
     private String icon;
     private Long uid;
-    private List<Folder> children;
+    private String parentId;
+    private List<Workspace> children;
 }

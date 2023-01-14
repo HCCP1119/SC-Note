@@ -6,6 +6,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Resource;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -26,7 +27,7 @@ public class RedisUtils {
 
     public static final String MAILCODE_SUF = "_MAILCODE";
 
-    @Autowired
+    @Resource
     private RedisTemplate redisTemplate;
 
     /**

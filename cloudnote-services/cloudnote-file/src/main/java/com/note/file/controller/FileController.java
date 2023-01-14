@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.note.api.constant.HttpStatus;
 import com.note.api.result.R;
 import com.note.file.entity.File;
+import com.note.file.entity.RemoveImg;
 import com.note.file.mapper.FileMapper;
 import com.note.file.mapper.UserInfoMapper;
 import com.note.file.service.MinioService;
@@ -22,6 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.FileOutputStream;
 import java.math.BigDecimal;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -118,7 +120,7 @@ public class FileController {
     }
 
     @DeleteMapping("/remove")
-    public R<?> getByOrder(@RequestParam("disk") String disk,@RequestParam("id") Long id){
+    public R<?> remove(@RequestParam("disk") String disk,@RequestParam("id") Long id){
         String path = disk.substring(disk.lastIndexOf("/")+1);
         try {
             service.removeFile(path);
@@ -129,5 +131,15 @@ public class FileController {
         }catch (Exception e){
             return R.fail("服务器异常");
         }
+    }
+
+    @DeleteMapping("/removeNoteImg")
+    public R<?> remove(@RequestBody RemoveImg removeImg){
+        List<String> removeImgList = removeImg.getRemoveImgList();
+        removeImgList.forEach(i -> {
+            String path = i.substring(i.lastIndexOf("/") + 1);
+            service.removeFile(path);
+        });
+        return R.ok("success");
     }
 }

@@ -9,7 +9,9 @@ import java.util.List;
 
 @Mapper
 public interface WorkspaceMapper extends BaseMapper<Workspace> {
-    List<Workspace> getTree();
+    List<Workspace> getTree(Long id);
+
+    List<Workspace> getChild(String id);
 
     void rename(String label,String id);
 

@@ -3,10 +3,8 @@ package com.note.tsc.controller;
 import com.note.api.result.R;
 import com.note.tsc.feign.FileService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
@@ -17,16 +15,19 @@ import org.springframework.web.multipart.MultipartFile;
 @RestController
 @CrossOrigin
 @RequiredArgsConstructor
+@RequestMapping("/file")
 public class FileController {
 
     private final FileService fileService;
 
     @PostMapping("/noteImage")
+    @PreAuthorize("hasRole('USER')")
     public R<?> uploadNoteImg(@RequestParam("img") MultipartFile img){
        return fileService.uploadNoteImg(img);
     }
 
     @PostMapping("/headImage")
+    @PreAuthorize("hasRole('USER')")
     public R<?> uploadHeadImg(@RequestParam("img") MultipartFile img,@RequestParam("uid") Long id){
         return fileService.uploadHeadImg(img,id);
     }

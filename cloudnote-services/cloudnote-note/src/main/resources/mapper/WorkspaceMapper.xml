@@ -11,13 +11,15 @@
         <result property="edit" column="edit"/>
         <result property="icon" column="icon"/>
         <result property="uid" column="uid"/>
-        <collection property="children" ofType="com.note.workspace.entity.Folder" javaType="java.util.List" column="id" select="com.note.workspace.mapper.FolderMapper.getTree"/>
+        <collection property="children" ofType="com.note.workspace.entity.Workspace" javaType="java.util.List" column="id" select="getChild"/>
     </resultMap>
     <select id="getTree" resultMap="workspaceMap">
-        select * from workspace ORDER BY create_time ASC;
+        select * from workspace where uid=#{id} and type='workspace' and deleted=0 ORDER BY create_time ASC;
     </select>
 
-    <update id="rename" parameterType="String">
-        update workspace set label=#{label} where id=#{id}
-    </update>
+    <select id="getChild" resultMap="workspaceMap">
+        select *
+        from workspace
+        where parent_id = #{id} and type IN ('folder','note') and deleted=0;
+    </select>
 </mapper>

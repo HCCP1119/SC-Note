@@ -2,20 +2,18 @@ package com.note.workspace.controller;
 
 import cn.hutool.core.util.IdUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.note.api.result.R;
-import com.note.workspace.entity.Folder;
 import com.note.workspace.entity.Note;
 import com.note.workspace.entity.SearchCondition;
-import com.note.workspace.entity.Workspace;
-import com.note.workspace.mapper.FolderMapper;
 import com.note.workspace.mapper.NoteMapper;
 import com.note.workspace.mapper.WorkspaceMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
+
 import java.util.List;
-import java.util.Map;
+import java.util.Objects;
 
 /**
  * 笔记控制器
@@ -31,87 +29,53 @@ public class NoteController {
     private final WorkspaceMapper workspaceMapper;
     private final NoteMapper noteMapper;
 
-    @GetMapping("/getTree")
-    public R<?> getTree(){
-        List<Workspace> tree = workspaceMapper.getTree();
-        return R.ok(tree,"获取成功");
-    }
-
-    @GetMapping("/getTree/{id}")
-    public R<?> getTree(@PathVariable("id") String id){
-        Workspace workspace = workspaceMapper.getById(id);
-        Folder folder = folderMapper.getById(id);
-        List<Folder> tree = folderMapper.getTree(id);
-        Map<String,Object> map = new HashMap<>();
-        map.put("tree",tree);
-        if (workspace==null){
-            map.put("tab",folder);
-        }else {
-            map.put("tab",workspace);
-        }
-        return R.ok(map,"获取成功");
-    }
-
-    @PostMapping("/addWorkspace")
-    public R<?> addWorkspace(@RequestBody Workspace workspace){
-        String id = IdUtil.simpleUUID();
-        workspace.setId(id);
-        workspaceMapper.insert(workspace);
-        List<Workspace> tree = workspaceMapper.getTree();
-        return R.ok(tree,"添加成功");
-    }
-
-    @PostMapping("/addFolder")
-    public R<?> addFolder(@RequestBody Folder folder){
-        String id = IdUtil.simpleUUID();
-        folder.setId(id);
-        folderMapper.insert(folder);
-        System.out.println(folder);
-        List<Workspace> tree = workspaceMapper.getTree();
-        return R.ok(tree,"添加成功");
-    }
-
-    @PostMapping("/rename/workspace")
-    public R<?> rename(@RequestBody Workspace workspace){
-        workspaceMapper.rename(workspace.getLabel(),workspace.getId());
-        List<Workspace> tree = workspaceMapper.getTree();
-        return R.ok(tree,"修改成功");
-    }
-
-    @PostMapping("/rename/folder")
-    public R<?> rename(@RequestBody Folder folder){
-        folderMapper.rename(folder.getLabel(),folder.getId());
-        List<Workspace> tree = workspaceMapper.getTree();
-        return R.ok(tree,"修改成功");
-    }
 
     @PostMapping("/addNote")
     public R<?> addNote(@RequestBody Folder folder){
         String id = IdUtil.simpleUUID();
         folder.setId(id);
-        Note note = new Note(id,null,folder.getLabel(),folder.getParentId());
+        Note note = new Note(id,"",folder.getLabel(),folder.getParentId(),folder.getUid());
         noteMapper.insert(note);
         folderMapper.insert(folder);
-        System.out.println(folder);
-        List<Workspace> tree = workspaceMapper.getTree();
-        return R.ok(tree,"添加成功");
+        return R.ok("添加成功");
+    }
+
+    @PostMapping("/saveTitle/{id}/{title}")
+    public R<?> saveTitle(@PathVariable("id") String id,@PathVariable("title") String title){
+        UpdateWrapper<Note> noteWrapper = new UpdateWrapper<>();
+        UpdateWrapper<Folder> folderWrapper = new UpdateWrapper<>();
+        noteWrapper.eq("id",id);
+        noteWrapper.set("title",title);
+        folderWrapper.eq("id",id);
+        folderWrapper.set("label",title);
+        noteMapper.update(null,noteWrapper);
+        folderMapper.update(null,folderWrapper);
+        return R.ok("success");
     }
 
     @PostMapping("/saveNote")
     public R<?> saveNote(@RequestBody Note note){
         noteMapper.updateNote(note);
+        UpdateWrapper<Folder> wrapper = new UpdateWrapper<>();
+        wrapper.eq("id",note.getId());
+        wrapper.set("label",note.getTitle());
+        folderMapper.update(null,wrapper);
         return R.ok("保存成功");
     }
 
     @GetMapping("/getNote/{id}")
     public R<?> getNote(@PathVariable("id") String id){
         Note note = noteMapper.selectById(id);
+        if (Objects.isNull(note.getContent())){
+            note.setContent("");
+        }
         return R.ok(note,"success");
     }
 
     @PostMapping("/search")
     public R<?> search(@RequestBody SearchCondition condition){
         QueryWrapper<Note> wrapper = new QueryWrapper<>();
+        wrapper.eq("uid",condition.getUserId());
         if (condition.getValue()!=null){
             wrapper.like("title",condition.getValue());
         }

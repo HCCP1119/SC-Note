@@ -21,8 +21,8 @@ public class NoteController {
 
     @GetMapping("/getTree")
     @PreAuthorize("hasRole('USER')")
-    public R<?> getTree(){
-       return noteService.getTree();
+    public R<?> getTree(@RequestParam("uid") Long id){
+       return noteService.getTree(id);
     }
 
     @GetMapping("/getTree/{id}")
@@ -42,16 +42,10 @@ public class NoteController {
         return noteService.addFolder(folder);
     }
 
-    @PostMapping("/rename/workspace")
+    @PostMapping("/rename")
     @PreAuthorize("hasRole('USER')")
     public R<?> renameWorkspace(@RequestBody Object workspace){
         return noteService.renameWorkspace(workspace);
-    }
-
-    @PostMapping("/rename/folder")
-    @PreAuthorize("hasRole('USER')")
-    public R<?> renameFolder(@RequestBody Object folder){
-        return noteService.renameFolder(folder);
     }
 
     @PostMapping("/addNote")
@@ -76,5 +70,17 @@ public class NoteController {
     @PreAuthorize("hasRole('USER')")
     public R<?> search(@RequestBody Object condition){
         return noteService.search(condition);
+    }
+
+    @PostMapping("/saveTitle/{id}/{title}")
+    @PreAuthorize("hasRole('USER')")
+    public R<?> saveTitle(@PathVariable("id") String id,@PathVariable("title") String title){
+        return noteService.saveTitle(id,title);
+    }
+
+    @DeleteMapping("/remove/{id}")
+    @PreAuthorize("hasRole('USER')")
+    public R<?> remove(@PathVariable("id") String id){
+        return noteService.remove(id);
     }
 }
