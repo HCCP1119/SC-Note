@@ -83,4 +83,11 @@ public class NoteController {
     public R<?> remove(@PathVariable("id") String id){
         return noteService.remove(id);
     }
+
+    @GetMapping("/removeList")
+    @PreAuthorize("hasRole('USER')")
+    public R<?> getRemoveList(@RequestParam("uid") Long id){
+        return noteService.getRemoveList(id);
+    }
+
 }

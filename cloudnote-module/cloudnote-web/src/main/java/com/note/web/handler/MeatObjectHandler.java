@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 import java.util.Date;
 
 /**
- * Todo
+ * mybatis-Plus自动填充
  *
  * @date 2022/12/6 15:58
  **/

@@ -1,6 +1,7 @@
 package com.note.workspace.controller;
 
 import cn.hutool.core.util.IdUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.note.api.result.R;
 import com.note.workspace.entity.Note;
@@ -86,6 +87,10 @@ public class WorkspaceController {
         List<String> folderList = new ArrayList<>();
         List<String> noteList = new ArrayList<>();
         selectChildListById(id,folderList,noteList);
+        Note note = noteMapper.selectById(id);
+        if (note!=null){
+            noteList.add(id);
+        }
         folderList.add(id);
         workspaceMapper.deleteBatchIds(folderList);
         if (noteList.size()>0){
@@ -102,5 +107,23 @@ public class WorkspaceController {
             }
             selectChildListById(folder.getId(),folderList,noteList);
         });
+    }
+
+    @GetMapping("/removeList")
+    public R<?> getRemoveList(@RequestParam("uid") Long id){
+        List<Workspace> removeList = workspaceMapper.getRemoveList(id);
+        return R.ok(removeList,"success");
+    }
+
+    @PostMapping("/restore/{id}")
+    public R<?> restore(@PathVariable("id") String id){
+        workspaceMapper.restore(id);
+        return R.ok("success");
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public R<?> delete(@PathVariable("id") String id){
+        workspaceMapper.delete(id);
+        return R.ok("success");
     }
 }

@@ -42,4 +42,7 @@ public interface NoteService {
 
     @DeleteMapping("/remove/{id}")
     R<?> remove(@PathVariable("id") String id);
+
+    @GetMapping("/removeList")
+    R<?> getRemoveList(@RequestParam("uid") Long id);
 }
