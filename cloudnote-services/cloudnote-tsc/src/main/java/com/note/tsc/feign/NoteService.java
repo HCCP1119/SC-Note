@@ -45,4 +45,7 @@ public interface NoteService {
 
     @GetMapping("/removeList")
     R<?> getRemoveList(@RequestParam("uid") Long id);
+
+    @GetMapping("/starNote")
+    R<?> starNote(@RequestParam("id") Long id);
 }

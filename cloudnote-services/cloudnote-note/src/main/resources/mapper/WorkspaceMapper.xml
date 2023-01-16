@@ -11,7 +11,7 @@
         <result property="edit" column="edit"/>
         <result property="icon" column="icon"/>
         <result property="uid" column="uid"/>
-        <collection property="children" ofType="com.note.workspace.entity.Workspace" javaType="java.util.List" column="id" select="getChild"/>
+        <collection property="children" ofType="com.note.workspace.entity.Workspace" javaType="java.util.List" column="{id=id}" select="getChild"/>
     </resultMap>
     <select id="getTree" resultMap="workspaceMap">
         select * from workspace where uid=#{id} and type='workspace' and deleted=0 ORDER BY create_time ASC;

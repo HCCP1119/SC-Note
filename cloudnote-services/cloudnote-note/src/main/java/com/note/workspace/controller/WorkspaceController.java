@@ -1,7 +1,6 @@
 package com.note.workspace.controller;
 
 import cn.hutool.core.util.IdUtil;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.note.api.result.R;
 import com.note.workspace.entity.Note;
@@ -56,15 +55,7 @@ public class WorkspaceController {
         String id = IdUtil.simpleUUID();
         workspace.setId(id);
         workspaceMapper.insert(workspace);
-        return R.ok("添加成功");
-    }
-
-    @PostMapping("/addFolder")
-    public R<?> addFolder(@RequestBody Workspace folder){
-        String id = IdUtil.simpleUUID();
-        folder.setId(id);
-        workspaceMapper.insert(folder);
-        return R.ok("添加成功");
+        return R.ok(id,"添加成功");
     }
 
     @PostMapping("/rename")
@@ -84,30 +75,11 @@ public class WorkspaceController {
 
     @DeleteMapping("/remove/{id}")
     public R<?> remove(@PathVariable("id") String id){
-        List<String> folderList = new ArrayList<>();
-        List<String> noteList = new ArrayList<>();
-        selectChildListById(id,folderList,noteList);
-        Note note = noteMapper.selectById(id);
-        if (note!=null){
-            noteList.add(id);
-        }
-        folderList.add(id);
-        workspaceMapper.deleteBatchIds(folderList);
-        if (noteList.size()>0){
-            noteMapper.deleteBatchIds(noteList);
-        }
+        workspaceMapper.deleteById(id);
+        noteMapper.deleteById(id);
         return R.ok("success");
     }
-    private void selectChildListById(String id,List<String> folderList,List<String> noteList){
-        List<Workspace> childList  = workspaceMapper.getChild(id);
-        childList.forEach(folder -> {
-            folderList.add(folder.getId());
-            if (folder.getType().equals("note")){
-                noteList.add(folder.getId());
-            }
-            selectChildListById(folder.getId(),folderList,noteList);
-        });
-    }
+
 
     @GetMapping("/removeList")
     public R<?> getRemoveList(@RequestParam("uid") Long id){
@@ -118,12 +90,29 @@ public class WorkspaceController {
     @PostMapping("/restore/{id}")
     public R<?> restore(@PathVariable("id") String id){
         workspaceMapper.restore(id);
+        noteMapper.restore(id);
         return R.ok("success");
     }
 
     @DeleteMapping("/delete/{id}")
     public R<?> delete(@PathVariable("id") String id){
-        workspaceMapper.delete(id);
+        List<String> folderList = new ArrayList<>();
+        List<String> noteList = new ArrayList<>();
+        selectChildListById(id,folderList,noteList);
+        noteList.add(id);
+        folderList.add(id);
+        folderList.forEach(workspaceMapper::delete);
+        noteList.forEach(noteMapper::delete);
         return R.ok("success");
+    }
+    private void selectChildListById(String id, List<String> folderList, List<String> noteList){
+        List<Workspace> childList  = workspaceMapper.getChild(id);
+        childList.forEach(folder -> {
+            folderList.add(folder.getId());
+            if (folder.getType().equals("note")){
+                noteList.add(folder.getId());
+            }
+            selectChildListById(folder.getId(),folderList,noteList);
+        });
     }
 }

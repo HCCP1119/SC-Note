@@ -37,7 +37,7 @@ public class NoteController {
         Note note = new Note(id,"",folder.getLabel(),folder.getParentId(),folder.getUid());
         noteMapper.insert(note);
         workspaceMapper.insert(folder);
-        return R.ok("添加成功");
+        return R.ok(id,"添加成功");
     }
 
     @PostMapping("/saveTitle/{id}/{title}")
@@ -87,6 +87,16 @@ public class NoteController {
         if (condition.getSortType().equals("DESC")){
             wrapper.orderByDesc("title");
         }
+        List<Note> notes = noteMapper.selectList(wrapper);
+        return R.ok(notes,"success");
+    }
+
+    @GetMapping("/starNote")
+    public R<?> starNote(@RequestParam("id") Long id){
+        QueryWrapper<Note> wrapper = new QueryWrapper<>();
+        wrapper.eq("uid",id);
+        wrapper.eq("star",1);
+        wrapper.orderByDesc("update_time");
         List<Note> notes = noteMapper.selectList(wrapper);
         return R.ok(notes,"success");
     }

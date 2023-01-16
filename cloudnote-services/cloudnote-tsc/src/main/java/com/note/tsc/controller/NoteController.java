@@ -90,4 +90,9 @@ public class NoteController {
         return noteService.getRemoveList(id);
     }
 
+    @GetMapping("/starNote")
+    @PreAuthorize("hasRole('USER')")
+    R<?> starNote(@RequestParam("id") Long id){
+        return noteService.starNote(id);
+    }
 }

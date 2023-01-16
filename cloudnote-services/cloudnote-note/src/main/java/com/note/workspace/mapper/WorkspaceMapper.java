@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
+import org.springframework.boot.context.properties.bind.DefaultValue;
 
 import java.util.List;
 
@@ -24,6 +25,6 @@ public interface WorkspaceMapper extends BaseMapper<Workspace> {
     @Update("update workspace set deleted=0 where id=#{id}")
     void restore(String id);
 
-    @Delete("delete from workspace where id=#{id} and deleted=1")
+    @Delete("delete from workspace where id=#{id}")
     void delete(String id);
 }
