@@ -1,6 +1,7 @@
 package com.note.workspace.controller;
 
 import cn.hutool.core.util.IdUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.note.api.result.R;
 import com.note.workspace.entity.Note;
@@ -114,5 +115,24 @@ public class WorkspaceController {
             }
             selectChildListById(folder.getId(),folderList,noteList);
         });
+    }
+
+    @GetMapping("/shareList")
+    public R<?> getShareList(@RequestParam("uid") Long id){
+        List<Workspace> shareList = workspaceMapper.getShareList(id);
+        return R.ok(shareList,"success");
+    }
+
+    @PostMapping("/share/{method}/{id}")
+    public R<?> share(@PathVariable("id") String id,@PathVariable("method") String method){
+        UpdateWrapper<Workspace> wrapper = new UpdateWrapper<>();
+        wrapper.eq("id",id);
+        if (method.equals("shared")){
+            wrapper.set("share",1);
+        }else{
+            wrapper.set("share",0);
+        }
+        workspaceMapper.update(null,wrapper);
+        return R.ok("success");
     }
 }

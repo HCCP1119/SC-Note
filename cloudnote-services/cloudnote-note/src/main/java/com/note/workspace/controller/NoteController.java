@@ -100,4 +100,18 @@ public class NoteController {
         List<Note> notes = noteMapper.selectList(wrapper);
         return R.ok(notes,"success");
     }
+
+    @PostMapping("/star/{method}/{id}")
+    public R<?> star(@PathVariable("id") String id,@PathVariable("method") String method){
+        UpdateWrapper<Note> wrapper = new UpdateWrapper<>();
+        wrapper.eq("id",id);
+        if (method.equals("stared")){
+            wrapper.set("star",1);
+        }else{
+            wrapper.set("star",0);
+        }
+        noteMapper.update(null,wrapper);
+        return R.ok("success");
+    }
+
 }

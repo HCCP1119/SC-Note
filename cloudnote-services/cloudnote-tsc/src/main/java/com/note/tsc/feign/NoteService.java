@@ -48,4 +48,7 @@ public interface NoteService {
 
     @GetMapping("/starNote")
     R<?> starNote(@RequestParam("id") Long id);
+
+    @GetMapping("/shareList")
+    R<?> getShareList(@RequestParam("uid") Long id);
 }

@@ -95,4 +95,10 @@ public class NoteController {
     R<?> starNote(@RequestParam("id") Long id){
         return noteService.starNote(id);
     }
+
+    @GetMapping("/shareList")
+    @PreAuthorize("hasRole('USER')")
+    public R<?> getShareList(@RequestParam("uid") Long id){
+        return noteService.getShareList(id);
+    }
 }

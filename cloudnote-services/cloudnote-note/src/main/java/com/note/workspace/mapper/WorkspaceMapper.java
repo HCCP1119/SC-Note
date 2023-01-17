@@ -6,7 +6,7 @@ import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
-import org.springframework.boot.context.properties.bind.DefaultValue;
+
 
 import java.util.List;
 
@@ -27,4 +27,7 @@ public interface WorkspaceMapper extends BaseMapper<Workspace> {
 
     @Delete("delete from workspace where id=#{id}")
     void delete(String id);
+
+    @Select("select id,create_time,update_time,label,type,isEdit,icon,parent_id,uid from workspace where uid=#{id} and share=1 and deleted=0")
+    List<Workspace> getShareList(Long id);
 }
