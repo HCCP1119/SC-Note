@@ -1,9 +1,11 @@
 package com.note.workspace.controller;
 
+import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.hutool.core.util.IdUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.note.api.result.R;
+import com.note.web.utils.SaTokenUtils;
 import com.note.workspace.entity.Note;
 import com.note.workspace.entity.Workspace;
 import com.note.workspace.mapper.NoteMapper;
@@ -31,12 +33,15 @@ public class WorkspaceController {
     private final NoteMapper noteMapper;
 
     @GetMapping("/getTree")
-    public R<?> getTree(@RequestParam("uid") Long id){
-        List<Workspace> tree = workspaceMapper.getTree(id);
+    @SaCheckPermission("NOTE")
+    public R<?> getTree(){
+        Long userId = SaTokenUtils.getLoginUserId();
+        List<Workspace> tree = workspaceMapper.getTree(userId);
         return R.ok(tree,"获取成功");
     }
 
     @GetMapping("/getTree/{id}")
+    @SaCheckPermission("NOTE")
     public R<?> getTree(@PathVariable("id") String id){
         Workspace workspace = workspaceMapper.getById(id);
         Workspace folder = workspaceMapper.getById(id);
@@ -52,6 +57,7 @@ public class WorkspaceController {
     }
 
     @PostMapping("/addWorkspace")
+    @SaCheckPermission("NOTE")
     public R<?> addWorkspace(@RequestBody Workspace workspace){
         String id = IdUtil.simpleUUID();
         workspace.setId(id);
@@ -60,6 +66,7 @@ public class WorkspaceController {
     }
 
     @PostMapping("/rename")
+    @SaCheckPermission("NOTE")
     public R<?> rename(@RequestBody Workspace workspace){
         UpdateWrapper<Workspace> workspaceWrapper = new UpdateWrapper<>();
         workspaceWrapper.eq("id",workspace.getId());
@@ -75,6 +82,7 @@ public class WorkspaceController {
     }
 
     @DeleteMapping("/remove/{id}")
+    @SaCheckPermission("NOTE")
     public R<?> remove(@PathVariable("id") String id){
         workspaceMapper.deleteById(id);
         noteMapper.deleteById(id);
@@ -83,12 +91,15 @@ public class WorkspaceController {
 
 
     @GetMapping("/removeList")
-    public R<?> getRemoveList(@RequestParam("uid") Long id){
-        List<Workspace> removeList = workspaceMapper.getRemoveList(id);
+    @SaCheckPermission("NOTE")
+    public R<?> getRemoveList(){
+        Long userId = SaTokenUtils.getLoginUserId();
+        List<Workspace> removeList = workspaceMapper.getRemoveList(userId);
         return R.ok(removeList,"success");
     }
 
     @PostMapping("/restore/{id}")
+    @SaCheckPermission("NOTE")
     public R<?> restore(@PathVariable("id") String id){
         workspaceMapper.restore(id);
         noteMapper.restore(id);
@@ -96,6 +107,7 @@ public class WorkspaceController {
     }
 
     @DeleteMapping("/delete/{id}")
+    @SaCheckPermission("NOTE")
     public R<?> delete(@PathVariable("id") String id){
         List<String> folderList = new ArrayList<>();
         List<String> noteList = new ArrayList<>();
@@ -118,12 +130,15 @@ public class WorkspaceController {
     }
 
     @GetMapping("/shareList")
-    public R<?> getShareList(@RequestParam("uid") Long id){
-        List<Workspace> shareList = workspaceMapper.getShareList(id);
+    @SaCheckPermission("NOTE")
+    public R<?> getShareList(){
+        Long userId = SaTokenUtils.getLoginUserId();
+        List<Workspace> shareList = workspaceMapper.getShareList(userId);
         return R.ok(shareList,"success");
     }
 
     @PostMapping("/share/{method}/{id}")
+    @SaCheckPermission("NOTE")
     public R<?> share(@PathVariable("id") String id,@PathVariable("method") String method){
         UpdateWrapper<Workspace> wrapper = new UpdateWrapper<>();
         wrapper.eq("id",id);

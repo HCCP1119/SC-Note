@@ -4,39 +4,3 @@ server:
 spring:
   application:
     name: cloudnote-gateway
-  cloud:
-    gateway:
-      discovery:
-        locator:
-          enabled: true
-      routes:
-        - id: usm
-          uri: lb://cloudnote-tsc
-          predicates:
-            - Path=/**
-
-      filter:
-        remove-hop-by-hop:
-          headers:
-            - access-control-allow-origin
-      globalcors:
-        cors-configurations:
-          "[/**]":
-            allowedOrigins: "*"
-            allowedHeaders: "*"
-            allowedMethods: "*"
-    nacos:
-      discovery:
-        # 服务注册地址
-        server-addr: 192.168.1.129:8848
-      config:
-        # 服务注册地址
-        server-addr: 192.168.1.129:8848
-        # 配置文件格式
-        file-extension: yml
-
-management:
-  endpoints:
-    web:
-      exposure:
-        include: "*"

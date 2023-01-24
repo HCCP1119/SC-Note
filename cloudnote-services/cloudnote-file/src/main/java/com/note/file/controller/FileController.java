@@ -1,5 +1,6 @@
 package com.note.file.controller;
 
+import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.note.api.constant.HttpStatus;
 import com.note.api.result.R;
@@ -8,6 +9,7 @@ import com.note.file.entity.RemoveImg;
 import com.note.file.mapper.FileMapper;
 import com.note.file.mapper.UserInfoMapper;
 import com.note.file.service.MinioService;
+import com.note.web.utils.SaTokenUtils;
 import io.minio.GetObjectResponse;
 import io.minio.MinioClient;
 import io.minio.RemoveObjectArgs;
@@ -48,19 +50,23 @@ public class FileController {
     }
 
     @PostMapping("/headImage")
-    public R<?> uploadHeadImg(@RequestParam("img") MultipartFile img,@RequestParam("uid") Long id){
-        String disk = userInfoMapper.getImgDisk(id);
+    @SaCheckPermission("FILE")
+    public R<?> uploadHeadImg(@RequestParam("img") MultipartFile img){
+        Long userId = SaTokenUtils.getLoginUserId();
+        String disk = userInfoMapper.getImgDisk(userId);
         if (disk!=null){
             service.removeFile(disk);
         }
         String path = service.upload(img);
         String fileName = path.substring(path.lastIndexOf("/")+1);
-        userInfoMapper.setHeadImg(path,fileName,id);
+        userInfoMapper.setHeadImg(path,fileName,userId);
         return R.ok(path,"success");
     }
 
     @PostMapping("/uploadFile")
-    public R<?> uploadFile(@RequestParam("file") MultipartFile file,@RequestParam("uid") Long id){
+    @SaCheckPermission("FILE")
+    public R<?> uploadFile(@RequestParam("file") MultipartFile file){
+        Long userId = SaTokenUtils.getLoginUserId();
         String disk = service.upload(file);
         String contentType = null;
         if (Objects.requireNonNull(file.getContentType()).startsWith("application")){
@@ -68,23 +74,27 @@ public class FileController {
         }else {
             contentType = file.getContentType();
         }
-        File dataFile = new File(disk,file.getOriginalFilename(),file.getSize(),id,contentType);
+        File dataFile = new File(disk,file.getOriginalFilename(),file.getSize(),userId,contentType);
         fileMapper.insert(dataFile);
-        return getFiles(id);
+        return getFiles();
     }
 
     @GetMapping("/getFiles")
-    public R<?> getFiles(@RequestParam("uid") Long id){
+    @SaCheckPermission("FILE")
+    public R<?> getFiles(){
+        Long userId = SaTokenUtils.getLoginUserId();
         QueryWrapper<File> wrapper = new QueryWrapper<>();
-        wrapper.eq("user_id",id);
+        wrapper.eq("user_id",userId);
         List<File> files = fileMapper.selectList(wrapper);
         return R.ok(files,"success");
     }
 
-    @GetMapping("/getFiles/{basis}/{sequence}/{id}")
-    public R<?> getByOrder(@PathVariable("basis") String basis,@PathVariable("sequence") String sequence,@PathVariable("id") Long id){
+    @GetMapping("/getFiles/{basis}/{sequence}")
+    @SaCheckPermission("FILE")
+    public R<?> getByOrder(@PathVariable("basis") String basis,@PathVariable("sequence") String sequence){
+        Long userId = SaTokenUtils.getLoginUserId();
         QueryWrapper<File> wrapper = new QueryWrapper<>();
-        wrapper.eq("user_id",id);
+        wrapper.eq("user_id",userId);
         if (sequence.equals("ASC")){
             wrapper.orderByAsc(basis);
         }else{
@@ -95,9 +105,10 @@ public class FileController {
     }
 
     @GetMapping("/download")
-    public ResponseEntity<?> download(@RequestParam("id") Long id,@RequestParam("disk") String disk){
+    public ResponseEntity<?> download(@RequestParam("disk") String disk){
+        Long userId = SaTokenUtils.getLoginUserId();
         QueryWrapper<File> wrapper = new QueryWrapper<>();
-        wrapper.eq("disk",disk).and(i -> i.eq("user_id",id));
+        wrapper.eq("disk",disk).and(i -> i.eq("user_id",userId));
         File file = fileMapper.selectOne(wrapper);
         if (Objects.isNull(file)){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(R.fail(HttpStatus.NOT_FOUND,"指定文件不存在"));
@@ -120,14 +131,16 @@ public class FileController {
     }
 
     @DeleteMapping("/remove")
-    public R<?> remove(@RequestParam("disk") String disk,@RequestParam("id") Long id){
+    @SaCheckPermission("FILE")
+    public R<?> remove(@RequestParam("disk") String disk){
+        Long userId = SaTokenUtils.getLoginUserId();
         String path = disk.substring(disk.lastIndexOf("/")+1);
         try {
             service.removeFile(path);
             QueryWrapper<File> wrapper = new QueryWrapper<>();
-            wrapper.eq("disk",disk).and(i -> i.eq("user_id",id));
+            wrapper.eq("disk",disk).and(i -> i.eq("user_id",userId));
             fileMapper.delete(wrapper);
-            return getFiles(id);
+            return getFiles();
         }catch (Exception e){
             return R.fail("服务器异常");
         }

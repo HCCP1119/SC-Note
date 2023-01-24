@@ -17,7 +17,7 @@
     </properties>
 
     <modules>
-        <module>cloudnote-tsc</module>
+        <module>cloudnote-umc</module>
         <module>cloudnote-mail</module>
         <module>cloudnote-note</module>
         <module>cloudnote-file</module>

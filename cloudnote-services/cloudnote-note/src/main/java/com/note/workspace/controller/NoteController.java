@@ -1,9 +1,11 @@
 package com.note.workspace.controller;
 
+import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.hutool.core.util.IdUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.note.api.result.R;
+import com.note.web.utils.SaTokenUtils;
 import com.note.workspace.entity.Note;
 import com.note.workspace.entity.SearchCondition;
 import com.note.workspace.entity.Workspace;
@@ -31,6 +33,7 @@ public class NoteController {
 
 
     @PostMapping("/addNote")
+    @SaCheckPermission("NOTE")
     public R<?> addNote(@RequestBody Workspace folder){
         String id = IdUtil.simpleUUID();
         folder.setId(id);
@@ -41,6 +44,7 @@ public class NoteController {
     }
 
     @PostMapping("/saveTitle/{id}/{title}")
+    @SaCheckPermission("NOTE")
     public R<?> saveTitle(@PathVariable("id") String id,@PathVariable("title") String title){
         UpdateWrapper<Note> noteWrapper = new UpdateWrapper<>();
         UpdateWrapper<Workspace> folderWrapper = new UpdateWrapper<>();
@@ -54,12 +58,14 @@ public class NoteController {
     }
 
     @PostMapping("/saveNote")
+    @SaCheckPermission("NOTE")
     public R<?> saveNote(@RequestBody Note note){
         noteMapper.updateNote(note);
         return R.ok("保存成功");
     }
 
     @GetMapping("/getNote/{id}")
+    @SaCheckPermission("NOTE")
     public R<?> getNote(@PathVariable("id") String id){
         Note note = noteMapper.selectById(id);
         if (Objects.isNull(note.getContent())){
@@ -69,6 +75,7 @@ public class NoteController {
     }
 
     @PostMapping("/search")
+    @SaCheckPermission("NOTE")
     public R<?> search(@RequestBody SearchCondition condition){
         QueryWrapper<Note> wrapper = new QueryWrapper<>();
         wrapper.eq("uid",condition.getUserId());
@@ -92,7 +99,9 @@ public class NoteController {
     }
 
     @GetMapping("/starNote")
-    public R<?> starNote(@RequestParam("id") Long id){
+    @SaCheckPermission("NOTE")
+    public R<?> starNote(){
+        Long id = SaTokenUtils.getLoginUserId();
         QueryWrapper<Note> wrapper = new QueryWrapper<>();
         wrapper.eq("uid",id);
         wrapper.eq("star",1);
@@ -102,6 +111,7 @@ public class NoteController {
     }
 
     @PostMapping("/star/{method}/{id}")
+    @SaCheckPermission("NOTE")
     public R<?> star(@PathVariable("id") String id,@PathVariable("method") String method){
         UpdateWrapper<Note> wrapper = new UpdateWrapper<>();
         wrapper.eq("id",id);

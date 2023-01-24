@@ -9,25 +9,18 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>cloudnote-file</artifactId>
+    <artifactId>cloudnote-umc</artifactId>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
     </properties>
 
-    <!-- alibabaCloudServer -->
     <dependencies>
+        <!-- alibabaCloudServer -->
         <dependency>
             <groupId>org.example</groupId>
             <artifactId>cloudnote-alibabaCloud</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
-
-        <!-- web -->
-        <dependency>
-            <groupId>org.example</groupId>
-            <artifactId>cloudnote-web</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
 
@@ -37,28 +30,24 @@
             <artifactId>mysql-connector-java</artifactId>
         </dependency>
 
-        <!-- minio -->
+        <!-- web -->
         <dependency>
-            <groupId>io.minio</groupId>
-            <artifactId>minio</artifactId>
-            <version>8.3.3</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.squareup.okhttp3</groupId>
-                    <artifactId>okhttp</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>com.squareup.okhttp3</groupId>
-            <artifactId>okhttp</artifactId>
-            <version>4.9.0</version>
+            <groupId>org.example</groupId>
+            <artifactId>cloudnote-web</artifactId>
+            <version>1.0-SNAPSHOT</version>
         </dependency>
 
-        <!-- hutool -->
         <dependency>
-            <groupId>cn.hutool</groupId>
-            <artifactId>hutool-core</artifactId>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
+            <scope>runtime</scope>
+            <optional>true</optional>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>
