@@ -162,9 +162,12 @@
     <orderEntry type="library" name="Maven: com.zaxxer:HikariCP:4.0.3" level="project" />
     <orderEntry type="library" name="Maven: org.springframework:spring-jdbc:5.3.15" level="project" />
     <orderEntry type="library" name="Maven: org.projectlombok:lombok:1.18.22" level="project" />
+    <orderEntry type="library" name="Maven: eu.bitwalker:UserAgentUtils:1.21" level="project" />
+    <orderEntry type="library" name="Maven: net.dreamlu:mica-ip2region:2.5.6" level="project" />
+    <orderEntry type="library" name="Maven: net.dreamlu:mica-core:2.5.6" level="project" />
+    <orderEntry type="library" name="Maven: org.springframework:spring-context:5.3.15" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: org.springframework.boot:spring-boot-devtools:2.6.3" level="project" />
     <orderEntry type="library" name="Maven: org.springframework.boot:spring-boot:2.6.3" level="project" />
-    <orderEntry type="library" name="Maven: org.springframework:spring-context:5.3.15" level="project" />
     <orderEntry type="library" name="Maven: org.springframework.boot:spring-boot-autoconfigure:2.6.3" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.springframework.boot:spring-boot-starter-test:2.6.3" level="project" />
     <orderEntry type="library" name="Maven: org.springframework.boot:spring-boot-starter:2.6.3" level="project" />
