@@ -5,7 +5,7 @@
 <mapper namespace="com.note.workspace.mapper.WorkspaceMapper">
     <resultMap id="workspaceMap" type="com.note.workspace.entity.Workspace">
         <id property="id" column="id"/>
-        <result property="createTime" column="create_time"/>
+        <result property="createTime" column="create_time" javaType="java.util.Date"/>
         <result property="label" column="label"/>
         <result property="type" column="type"/>
         <result property="edit" column="edit"/>

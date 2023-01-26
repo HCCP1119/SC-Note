@@ -154,8 +154,17 @@ public class RedisUtils {
         return redisTemplate.delete(keys) > 0;
     }
 
+    /**
+     * 指定key增加1
+     *
+     * @param key 关键
+     */
     public void incrByKey(final String key){
         redisTemplate.opsForValue().increment(key,1);
+    }
+
+    public Set<String> getKey(final String keyword){
+        return redisTemplate.keys("*" + keyword);
     }
 
 }

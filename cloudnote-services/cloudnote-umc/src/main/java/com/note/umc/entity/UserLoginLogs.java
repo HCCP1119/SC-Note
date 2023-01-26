@@ -48,6 +48,10 @@ public class UserLoginLogs {
      */
     private String address;
     /**
+     * 状态
+     */
+    private Integer status;
+    /**
      * userId
      */
     private Long uid;

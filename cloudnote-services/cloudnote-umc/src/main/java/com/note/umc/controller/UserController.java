@@ -3,6 +3,7 @@ package com.note.umc.controller;
 import cn.dev33.satoken.annotation.SaCheckLogin;
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.dev33.satoken.context.SaHolder;
+import cn.dev33.satoken.secure.BCrypt;
 import cn.dev33.satoken.session.SaSession;
 import cn.dev33.satoken.session.TokenSign;
 import cn.dev33.satoken.stp.StpUtil;
@@ -10,6 +11,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.note.api.entity.SysUser;
 import com.note.api.result.R;
 
+import com.note.umc.entity.ResetPasswordBody;
 import com.note.umc.entity.SysUserView;
 import com.note.umc.entity.UserLoginLogs;
 import com.note.umc.mapper.LoginLogMapper;
@@ -20,9 +22,7 @@ import eu.bitwalker.useragentutils.UserAgent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 /**
@@ -87,8 +87,35 @@ public class UserController {
     public R<?> tokenList(){
         Long userId = SaTokenUtils.getLoginUserId();
         QueryWrapper<UserLoginLogs> wrapper = new QueryWrapper<>();
-        wrapper.eq("uid",userId);
-        List<UserLoginLogs> tokenList = loginLogMapper.selectList(wrapper);
-        return R.ok(tokenList,"success");
+        wrapper.eq("uid",userId).orderByDesc("status");
+        List<UserLoginLogs> loginLogs = loginLogMapper.selectList(wrapper);
+        return R.ok(loginLogs,"success");
+    }
+
+    @DeleteMapping("/kickout")
+    @SaCheckPermission("ME")
+    public R<?> kickout(@RequestBody String token){
+        String tokenValue = StpUtil.searchTokenValue(token,0,-1,true).get(0);
+        StpUtil.logoutByTokenValue(tokenValue.split("satoken:login:token:")[1]);
+        return tokenList();
+    }
+
+    @DeleteMapping("/delToken/{logId}")
+    @SaCheckPermission("ME")
+    public R<?> deletedToken(@PathVariable("logId") Long logId){
+        loginLogMapper.deleteById(logId);
+        return tokenList();
+    }
+
+    @PostMapping("/resetPassword")
+    @SaCheckPermission("ME")
+    public R<?> resetPassword(@RequestBody ResetPasswordBody password){
+        Long userId = SaTokenUtils.getLoginUserId();
+        if(BCrypt.checkpw(password.getOldPassword(),userMapper.findById(userId).getPassword())){
+            userMapper.resetPassword(BCrypt.hashpw(password.getNewPassword()),userId);
+            StpUtil.logout();
+            return R.ok("修改成功,请重新登录");
+        }
+        return R.fail("密码错误");
     }
 }

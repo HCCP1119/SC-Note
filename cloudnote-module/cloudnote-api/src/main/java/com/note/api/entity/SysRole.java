@@ -5,7 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.sql.Date;
+import java.io.Serializable;
+import java.util.Date;
 import java.util.Set;
 
 /**
@@ -17,7 +18,9 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @TableName("sys_role")
-public class SysRole {
+public class SysRole implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     @TableId(type = IdType.AUTO)
     private Long id;
     private String name;

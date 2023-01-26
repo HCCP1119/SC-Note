@@ -7,7 +7,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 
-import java.sql.Date;
+import java.io.Serializable;
+import java.util.Date;
 import java.util.Set;
 
 /**
@@ -19,7 +20,8 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @TableName("sys_user")
-public class SysUser {
+public class SysUser implements Serializable {
+    private static final long serialVersionUID = 1L;
     /**
      * id
      */

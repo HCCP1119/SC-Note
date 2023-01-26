@@ -1,6 +1,7 @@
 package com.note.umc.controller;
 
 import cn.dev33.satoken.annotation.SaCheckLogin;
+import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.dev33.satoken.context.SaHolder;
 import cn.dev33.satoken.secure.BCrypt;
 import cn.dev33.satoken.session.SaSession;
@@ -47,18 +48,19 @@ public class AuthController {
     private final Ip2regionSearcher ip2regionSearcher;
 
     @PostMapping("login")
-    public R<?> login(@RequestBody LoginBody loginUser){
+    public R<?> login(@RequestBody LoginBody loginUser) {
         SysUser user = userMapper.findByUsernameOrEmail(loginUser.getUsername(), loginUser.getUsername());
-        if (user==null){
+        if (user == null) {
             return R.fail("用户名不存在");
         }
-        if (BCrypt.checkpw(loginUser.getPassword(),user.getPassword())){
+        if (BCrypt.checkpw(loginUser.getPassword(), user.getPassword())) {
             String header = SaHolder.getRequest().getHeader("User-Agent");
-            String ip = SaHolder.getRequest().getHeader("Host").substring(0,(SaHolder.getRequest().getHeader("Host")).lastIndexOf(":"));
+            String ip = SaHolder.getRequest().getHeader("Host").substring(0, (SaHolder.getRequest().getHeader("Host")).lastIndexOf(":"));
             String address = Objects.requireNonNull(ip2regionSearcher.memorySearch(ip)).getAddress();
             UserAgent userAgent = UserAgent.parseUserAgentString(header);
-            String type = userAgent.getBrowser().getName().substring(0,(userAgent.getBrowser().getName()).lastIndexOf(" "));
-            String system = userAgent.getOperatingSystem().getName().substring(0,(userAgent.getOperatingSystem().getName()).lastIndexOf(" "));;
+            String type = userAgent.getBrowser().getName().substring(0, (userAgent.getBrowser().getName()).lastIndexOf(" "));
+            String system = userAgent.getOperatingSystem().getName().substring(0, (userAgent.getOperatingSystem().getName()).lastIndexOf(" "));
+            ;
             StpUtil.login(user.getId());
             SaTokenUtils.setLoginUser(user);
             String token = StpUtil.getTokenValue();
@@ -66,31 +68,32 @@ public class AuthController {
             UserLoginLogs log = new UserLoginLogs(
                     null,
                     tokenSuf,
-                    new Date(StpUtil.getSessionByLoginId(SaTokenUtils.getLoginUserId()).getCreateTime()),
+                    new Date(StpUtil.getTokenSession().getCreateTime()),
                     system,
                     type,
                     ip,
                     address,
+                    1,
                     SaTokenUtils.getLoginUserId()
-                    );
+            );
             loginLogMapper.insert(log);
-            SaHolder.getResponse().addHeader("Authorization",token);
-            SaHolder.getResponse().addHeader("Access-Control-Expose-Headers","Authorization");
-            return R.ok(user.getId(),"登录成功");
+            SaHolder.getResponse().addHeader("Authorization", token);
+            SaHolder.getResponse().addHeader("Access-Control-Expose-Headers", "Authorization");
+            return R.ok(user.getId(), "登录成功");
         }
         return R.fail("用户名或密码错误");
     }
 
     @PostMapping("/register/{email}")
-    public R<?> sendRegisterCode(@PathVariable("email") final String email, final HttpServletRequest request){
-        if (redisServer.hasKey(request.getRemoteAddr()+"_COUNT")){
-            Integer count = redisServer.getObject( request.getRemoteAddr()+"_COUNT");
-            if (count > 5){
+    public R<?> sendRegisterCode(@PathVariable("email") final String email, final HttpServletRequest request) {
+        if (redisServer.hasKey(request.getRemoteAddr() + "_COUNT")) {
+            Integer count = redisServer.getObject(request.getRemoteAddr() + "_COUNT");
+            if (count > 5) {
                 return R.fail("发送频繁，请稍后再试");
             }
         }
         Boolean isSend = codeMailService.sendCode(email, request.getRemoteAddr());
-        if (isSend){
+        if (isSend) {
             return R.ok("发送成功");
         }
         return R.fail("发送失败，请稍后再试");
@@ -99,10 +102,10 @@ public class AuthController {
     @PostMapping("register")
     public R<?> apiRegister(@RequestBody final RegisterBody user) {
         String verifyCode = redisServer.getObject(user.getEmail() + RedisUtils.MAILCODE_SUF);
-        if (user.getAuthCode().isEmpty() || !user.getAuthCode().equals(verifyCode)){
+        if (user.getAuthCode().isEmpty() || !user.getAuthCode().equals(verifyCode)) {
             return R.fail("无效验证码");
         }
-        if (userMapper.hasEmail(user.getEmail(),user.getUsername())){
+        if (userMapper.hasEmail(user.getEmail(), user.getUsername())) {
             return R.fail("该邮箱或用户名已注册");
         }
         final SysUser sysUser = new SysUser(
@@ -113,14 +116,15 @@ public class AuthController {
         );
         userMapper.insert(sysUser);
         QueryWrapper<SysUser> wrapper = new QueryWrapper<>();
-        wrapper.select("id").eq("username",user.getUsername());
+        wrapper.select("id").eq("username", user.getUsername());
         roleMapper.registerUserRole(userMapper.selectOne(wrapper).getId());
         return R.ok("注册成功");
     }
 
     @PostMapping("logout")
-    public R<?> logout(){
+    public R<?> logout() {
         StpUtil.logout();
         return R.ok("退出成功");
     }
+
 }
