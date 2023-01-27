@@ -15,4 +15,6 @@ import lombok.NoArgsConstructor;
 public class ResetPasswordBody {
     private String oldPassword;
     private String newPassword;
+    private String email;
+    private String authCode;
 }

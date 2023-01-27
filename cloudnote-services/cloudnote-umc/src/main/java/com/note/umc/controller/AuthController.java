@@ -8,10 +8,12 @@ import cn.dev33.satoken.session.SaSession;
 import cn.dev33.satoken.session.TokenSign;
 import cn.dev33.satoken.stp.StpUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.note.api.entity.SysUser;
 import com.note.api.result.R;
 import com.note.umc.entity.LoginBody;
 import com.note.umc.entity.RegisterBody;
+import com.note.umc.entity.ResetPasswordBody;
 import com.note.umc.entity.UserLoginLogs;
 import com.note.umc.feign.CodeMailService;
 import com.note.umc.mapper.LoginLogMapper;
@@ -19,6 +21,7 @@ import com.note.umc.mapper.RoleMapper;
 import com.note.umc.mapper.UserMapper;
 import com.note.web.utils.RedisUtils;
 import com.note.web.utils.SaTokenUtils;
+import eu.bitwalker.useragentutils.DeviceType;
 import eu.bitwalker.useragentutils.UserAgent;
 import lombok.RequiredArgsConstructor;
 import net.dreamlu.mica.ip2region.core.Ip2regionSearcher;
@@ -60,7 +63,7 @@ public class AuthController {
             UserAgent userAgent = UserAgent.parseUserAgentString(header);
             String type = userAgent.getBrowser().getName().substring(0, (userAgent.getBrowser().getName()).lastIndexOf(" "));
             String system = userAgent.getOperatingSystem().getName().substring(0, (userAgent.getOperatingSystem().getName()).lastIndexOf(" "));
-            ;
+            DeviceType device = userAgent.getOperatingSystem().getDeviceType();
             StpUtil.login(user.getId());
             SaTokenUtils.setLoginUser(user);
             String token = StpUtil.getTokenValue();
@@ -69,6 +72,7 @@ public class AuthController {
                     null,
                     tokenSuf,
                     new Date(StpUtil.getTokenSession().getCreateTime()),
+                    DeviceType.COMPUTER.equals(device) ? "PC" : "PHONE",
                     system,
                     type,
                     ip,
@@ -127,4 +131,24 @@ public class AuthController {
         return R.ok("退出成功");
     }
 
+    @GetMapping("/register/verify")
+    public R<?> verify(@RequestParam String account) {
+        SysUser user = userMapper.findByUsernameOrEmail(account, account);
+        if (user != null) {
+            return R.ok(user.getEmail(), "success");
+        }
+        return R.fail("用户不存在");
+    }
+
+    @PostMapping("/register/reset")
+    public R<?> reset(@RequestBody ResetPasswordBody formBody) {
+        String verifyCode = redisServer.getObject(formBody.getEmail() + RedisUtils.MAILCODE_SUF);
+        if (formBody.getAuthCode().isEmpty() || !formBody.getAuthCode().equals(verifyCode)) {
+            return R.fail("验证码错误");
+        }
+        UpdateWrapper<SysUser> wrapper = new UpdateWrapper<>();
+        wrapper.eq("email", formBody.getEmail()).set("password", BCrypt.hashpw(formBody.getNewPassword()));
+        userMapper.update(null, wrapper);
+        return R.ok("success");
+    }
 }

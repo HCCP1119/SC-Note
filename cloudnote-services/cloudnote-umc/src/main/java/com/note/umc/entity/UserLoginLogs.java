@@ -1,6 +1,7 @@
 package com.note.umc.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -35,6 +36,11 @@ public class UserLoginLogs {
      * 设备
      */
     private String device;
+    /**
+     * 系统
+     */
+    @TableField("`system`")
+    private String system;
     /**
      * 浏览器
      */

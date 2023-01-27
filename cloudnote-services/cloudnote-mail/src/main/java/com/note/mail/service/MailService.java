@@ -57,8 +57,9 @@ public class MailService {
             // 判断该ip发送验证码的次数并进行限制
             if(!(redisServer.hasKey(mail.getIp()+"_COUNT"))){
                 redisServer.setObject(mail.getIp()+"_COUNT",1,1L,TimeUnit.HOURS);
+            }else {
+                redisServer.incrByKey(mail.getIp()+"_COUNT");
             }
-            redisServer.incrByKey(mail.getIp()+"_COUNT");
             //缓存验证码
             redisServer.setObject(mail.getEmail()+RedisUtils.MAILCODE_SUF,code,10L, TimeUnit.MINUTES);
             return true;

@@ -4,8 +4,6 @@ import cn.dev33.satoken.annotation.SaCheckLogin;
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.dev33.satoken.context.SaHolder;
 import cn.dev33.satoken.secure.BCrypt;
-import cn.dev33.satoken.session.SaSession;
-import cn.dev33.satoken.session.TokenSign;
 import cn.dev33.satoken.stp.StpUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.note.api.entity.SysUser;
@@ -18,6 +16,8 @@ import com.note.umc.mapper.LoginLogMapper;
 import com.note.umc.mapper.UserInfoMapper;
 import com.note.umc.mapper.UserMapper;
 import com.note.web.utils.SaTokenUtils;
+import eu.bitwalker.useragentutils.DeviceType;
+import eu.bitwalker.useragentutils.OperatingSystem;
 import eu.bitwalker.useragentutils.UserAgent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -52,10 +52,10 @@ public class UserController {
     public  R<?> testVer1(){
         String header = SaHolder.getRequest().getHeader("User-Agent");
         UserAgent userAgent = UserAgent.parseUserAgentString(header);
-        String type = userAgent.getBrowser().getName();
-        String system = userAgent.getOperatingSystem().getName();
-        System.out.println(type);
-        System.out.println(system);
+        OperatingSystem os = userAgent.getOperatingSystem();
+        DeviceType device = os.getDeviceType();
+        System.out.println(device);
+        System.out.println(DeviceType.MOBILE.equals(device));
         return R.ok("success");
     }
 
