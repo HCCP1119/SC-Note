@@ -17,6 +17,12 @@
     </properties>
 
     <dependencies>
+        <!-- spring cloud -->
+        <dependency>
+            <groupId>org.example</groupId>
+            <artifactId>cloudnote-alibabaCloud</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
         <!-- feign -->
         <dependency>
             <groupId>org.springframework.cloud</groupId>

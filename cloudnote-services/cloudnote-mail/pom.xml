@@ -17,13 +17,6 @@
     </properties>
 
     <dependencies>
-        <!-- alibabaCloudServer -->
-        <dependency>
-            <groupId>org.example</groupId>
-            <artifactId>cloudnote-alibabaCloud</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
-
         <!-- SpringBoot Web -->
         <dependency>
             <groupId>org.example</groupId>

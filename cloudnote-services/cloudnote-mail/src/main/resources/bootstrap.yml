@@ -12,3 +12,4 @@ spring:
           - application.${spring.cloud.nacos.config.file-extension}
         extension-configs:
           - mailServer.yml
+          - sentinel.yml

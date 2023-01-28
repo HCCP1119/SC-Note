@@ -5,6 +5,7 @@ import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.dev33.satoken.context.SaHolder;
 import cn.dev33.satoken.secure.BCrypt;
 import cn.dev33.satoken.stp.StpUtil;
+import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.note.api.entity.SysUser;
 import com.note.api.result.R;
@@ -15,10 +16,8 @@ import com.note.umc.entity.UserLoginLogs;
 import com.note.umc.mapper.LoginLogMapper;
 import com.note.umc.mapper.UserInfoMapper;
 import com.note.umc.mapper.UserMapper;
+import com.note.web.handler.GlobalSentinelHandler;
 import com.note.web.utils.SaTokenUtils;
-import eu.bitwalker.useragentutils.DeviceType;
-import eu.bitwalker.useragentutils.OperatingSystem;
-import eu.bitwalker.useragentutils.UserAgent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -39,25 +38,6 @@ public class UserController {
     private final UserMapper userMapper;
     private final UserInfoMapper userInfoMapper;
     private final LoginLogMapper loginLogMapper;
-
-    @GetMapping("/test")
-    @SaCheckPermission("ME")
-    public R<?> testVer(){
-        Object user = StpUtil.getTokenSession().get("loginUser");
-        System.out.println(user);
-        return R.ok("success");
-    }
-
-    @GetMapping("/test1")
-    public  R<?> testVer1(){
-        String header = SaHolder.getRequest().getHeader("User-Agent");
-        UserAgent userAgent = UserAgent.parseUserAgentString(header);
-        OperatingSystem os = userAgent.getOperatingSystem();
-        DeviceType device = os.getDeviceType();
-        System.out.println(device);
-        System.out.println(DeviceType.MOBILE.equals(device));
-        return R.ok("success");
-    }
 
     @GetMapping("/getUser")
     @SaCheckPermission("ME")

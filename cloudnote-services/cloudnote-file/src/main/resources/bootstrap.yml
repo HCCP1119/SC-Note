@@ -10,3 +10,4 @@ spring:
           - application.${spring.cloud.nacos.config.file-extension}
         extension-configs:
           - fileServer.yml
+          - sentinel.yml

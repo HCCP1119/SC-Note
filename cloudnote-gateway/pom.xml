@@ -30,12 +30,6 @@
             <version>1.0-SNAPSHOT</version>
         </dependency>
 
-        <!-- sentinel-datasource-nacos -->
-        <dependency>
-            <groupId>com.alibaba.csp</groupId>
-            <artifactId>sentinel-datasource-nacos</artifactId>
-        </dependency>
-
         <!-- openFeign -->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
