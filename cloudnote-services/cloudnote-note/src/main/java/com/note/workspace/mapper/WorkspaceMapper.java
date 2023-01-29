@@ -1,6 +1,7 @@
 package com.note.workspace.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.note.api.entity.SysUser;
 import com.note.workspace.entity.Workspace;
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Mapper;
@@ -30,4 +31,9 @@ public interface WorkspaceMapper extends BaseMapper<Workspace> {
 
     @Select("select id,create_time,update_time,label,type,isEdit,icon,parent_id,uid from workspace where uid=#{id} and share=1 and deleted=0")
     List<Workspace> getShareList(Long id);
+
+    @Select("select id,create_time,update_time,label,type,isEdit,icon,parent_id,uid from workspace where id=#{id} and share=1 and deleted=0")
+    Workspace getShare(String id);
+    @Select("select username from sys_user where id=#{id}")
+    String getShareUser(Long id);
 }

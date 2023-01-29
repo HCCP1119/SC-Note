@@ -15,7 +15,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -124,4 +126,20 @@ public class NoteController {
         return R.ok("success");
     }
 
+    @GetMapping("/share/getNote/{id}")
+    public R<?> shareGetNote(@PathVariable("id") String id){
+        Workspace share = workspaceMapper.getShare(id);
+        if (share != null) {
+            Map<String,Object> map = new HashMap<>();
+            String username = workspaceMapper.getShareUser(share.getUid());
+            Note note = noteMapper.selectById(id);
+            if (Objects.isNull(note.getContent())){
+                note.setContent("");
+            }
+            map.put("user",username);
+            map.put("note",note);
+            return R.ok(map,"success");
+        }
+        return R.fail("fail");
+    }
 }

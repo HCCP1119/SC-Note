@@ -35,6 +35,7 @@ public class Workspace {
     private Boolean isEdit;
     @TableLogic
     private Integer deleted;
+    private Integer share;
     private String icon;
     private Long uid;
     private String parentId;

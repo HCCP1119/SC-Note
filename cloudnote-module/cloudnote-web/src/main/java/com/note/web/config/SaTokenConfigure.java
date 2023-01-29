@@ -63,7 +63,6 @@ public class SaTokenConfigure implements WebMvcConfigurer {
     public StpLogic getStpLogicJwt() {
         return new StpLogicJwtForSimple();
     }
-
     // 从 0 分钟开始 每隔 5 分钟执行一次 Same-Token
     @Scheduled(cron = "0 0/10 * * * ? ")
     public void refreshToken(){

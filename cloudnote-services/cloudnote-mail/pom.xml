@@ -22,20 +22,6 @@
             <groupId>org.example</groupId>
             <artifactId>cloudnote-web</artifactId>
             <version>1.0-SNAPSHOT</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.springframework.boot</groupId>
-                    <artifactId>spring-boot-starter-security</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>io.jsonwebtoken</groupId>
-                    <artifactId>jjwt</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.json</groupId>
-                    <artifactId>json</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
 
         <!-- Mail -->
