@@ -69,6 +69,13 @@
                 <artifactId>hutool-core</artifactId>
                 <version>${huto.version}</version>
             </dependency>
+
+            <!-- html2md -->
+            <dependency>
+                <groupId>com.vladsch.flexmark</groupId>
+                <artifactId>flexmark-all</artifactId>
+                <version>0.62.2</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 </project>

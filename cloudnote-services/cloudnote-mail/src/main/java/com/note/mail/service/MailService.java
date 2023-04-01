@@ -15,6 +15,8 @@ import org.thymeleaf.context.Context;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -32,17 +34,18 @@ public class MailService {
     @Value("${spring.mail.username}")
     private String from;
 
-    public Boolean sendCode(final CodeMail mail){
+    public Boolean sendCode(final CodeMail mail) {
         //随机生成一个四位数的验证码
-        String  code = RandomUtil.randomString(6);
+        String code = RandomUtil.randomString(6);
         //使用模板
         Context context = new Context();
         context.setVariable("code", code);
-        context.setVariable("title","邮箱验证码");
-        String content = templateEngine.process("mail",context);
+        context.setVariable("title", "邮箱验证码");
+        String content = templateEngine.process("mail", context);
         //创建简单邮件消息
         MimeMessage message = javaMailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message);
+        ExecutorService executorService = Executors.newFixedThreadPool(10);
         //发送邮件账户
         try {
             helper.setFrom(from);
@@ -51,17 +54,20 @@ public class MailService {
             //邮件标题
             helper.setSubject("验证你的注册邮箱");
             //邮件内容
-            helper.setText(content,true);
-            javaMailSender.send(message);
-
-            // 判断该ip发送验证码的次数并进行限制
-            if(!(redisServer.hasKey(mail.getIp()+"_COUNT"))){
-                redisServer.setObject(mail.getIp()+"_COUNT",1,1L,TimeUnit.HOURS);
-            }else {
-                redisServer.incrByKey(mail.getIp()+"_COUNT");
-            }
-            //缓存验证码
-            redisServer.setObject(mail.getEmail()+RedisUtils.MAILCODE_SUF,code,10L, TimeUnit.MINUTES);
+            helper.setText(content, true);
+            // 异步发送邮件和缓存验证码
+            executorService.submit(() -> {
+                // 发送邮件
+                javaMailSender.send(message);
+                // 判断该ip发送验证码的次数并进行限制
+                if (!(redisServer.hasKey(mail.getIp() + "_COUNT"))) {
+                    redisServer.setObject(mail.getIp() + "_COUNT", 1, 1L, TimeUnit.HOURS);
+                } else {
+                    redisServer.incrByKey(mail.getIp() + "_COUNT");
+                }
+                // 缓存验证码
+                redisServer.setObject(mail.getEmail() + RedisUtils.MAILCODE_SUF, code, 10L, TimeUnit.MINUTES);
+            });
             return true;
         } catch (MessagingException e) {
             return false;
