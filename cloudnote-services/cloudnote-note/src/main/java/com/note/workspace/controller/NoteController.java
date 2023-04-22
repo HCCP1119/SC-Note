@@ -96,6 +96,7 @@ public class NoteController {
         if (condition.getSortType().equals("DESC")){
             wrapper.orderByDesc("title");
         }
+        wrapper.eq("status",0);
         List<Note> notes = noteMapper.selectList(wrapper);
         return R.ok(notes,"success");
     }
@@ -108,6 +109,7 @@ public class NoteController {
         wrapper.eq("uid",id);
         wrapper.eq("star",1);
         wrapper.orderByDesc("update_time");
+        wrapper.eq("status",0);
         List<Note> notes = noteMapper.selectList(wrapper);
         return R.ok(notes,"success");
     }

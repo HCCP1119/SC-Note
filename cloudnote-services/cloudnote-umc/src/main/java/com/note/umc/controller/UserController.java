@@ -96,6 +96,6 @@ public class UserController {
             StpUtil.logout();
             return R.ok("修改成功,请重新登录");
         }
-        return R.fail("密码错误");
+        return R.fail("旧密码错误");
     }
 }

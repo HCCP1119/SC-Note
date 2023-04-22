@@ -39,5 +39,7 @@ public class Workspace {
     private String icon;
     private Long uid;
     private String parentId;
+    @TableField("status")
+    private Integer status;
     private List<Workspace> children;
 }

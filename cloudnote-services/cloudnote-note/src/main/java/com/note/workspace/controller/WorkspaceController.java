@@ -78,14 +78,21 @@ public class WorkspaceController {
             noteWrapper.set("title",workspace.getLabel());
             noteMapper.update(null,noteWrapper);
         }
-        return R.ok("修改成功");
+        return R.ok(workspace.getId(),"修改成功");
     }
 
     @DeleteMapping("/remove/{id}")
     @SaCheckPermission("NOTE")
     public R<?> remove(@PathVariable("id") String id){
+        List<String> folderList = new ArrayList<>();
+        List<String> notes = new ArrayList<>();
+        selectChildListById(id,folderList,notes);
+        folderList.add(id);
+        notes.add(id);
         workspaceMapper.deleteById(id);
         noteMapper.deleteById(id);
+        folderList.forEach(workspaceMapper::fakeDel);
+        notes.forEach(noteMapper::fakeDel);
         return R.ok("success");
     }
 
@@ -101,8 +108,13 @@ public class WorkspaceController {
     @PostMapping("/restore/{id}")
     @SaCheckPermission("NOTE")
     public R<?> restore(@PathVariable("id") String id){
-        workspaceMapper.restore(id);
-        noteMapper.restore(id);
+        List<String> folderList = new ArrayList<>();
+        List<String> notes = new ArrayList<>();
+        selectChildListById(id,folderList,notes);
+        folderList.add(id);
+        notes.add(id);
+        folderList.forEach(workspaceMapper::restore);
+        notes.forEach(noteMapper::restore);
         return R.ok("success");
     }
 

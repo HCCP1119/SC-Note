@@ -14,10 +14,13 @@ public interface NoteMapper extends BaseMapper<Note> {
     @Update("update note set content=#{content},title=#{title} where id=#{id}")
     void updateNote(Note note);
 
-    @Update("update note set deleted=0 where id=#{id}")
+    @Update("update note set deleted=0,status=0 where id=#{id}")
     void restore(String id);
 
     @Delete("delete from note where id=#{id}")
     void delete(String id);
+
+    @Update("update note set status = 1 where id=#{id}")
+    void fakeDel(String id);
 
 }

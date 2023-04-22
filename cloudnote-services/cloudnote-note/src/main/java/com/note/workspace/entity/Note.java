@@ -34,6 +34,8 @@ public class Note {
     private Date updateTime;
     private String parentId;
     private Long uid;
+    @TableField("status")
+    private Integer status;
 
     public Note(String id, String content, String title, String parentId,Long uid) {
         this.id = id;
