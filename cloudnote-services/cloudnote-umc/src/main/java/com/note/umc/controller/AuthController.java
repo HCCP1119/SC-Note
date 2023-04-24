@@ -11,13 +11,11 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.note.api.entity.SysUser;
 import com.note.api.result.R;
-import com.note.umc.entity.LoginBody;
-import com.note.umc.entity.RegisterBody;
-import com.note.umc.entity.ResetPasswordBody;
-import com.note.umc.entity.UserLoginLogs;
+import com.note.umc.entity.*;
 import com.note.umc.feign.CodeMailService;
 import com.note.umc.mapper.LoginLogMapper;
 import com.note.umc.mapper.RoleMapper;
+import com.note.umc.mapper.UserInfoMapper;
 import com.note.umc.mapper.UserMapper;
 import com.note.web.utils.RedisUtils;
 import com.note.web.utils.SaTokenUtils;
@@ -44,6 +42,7 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class AuthController {
     private final UserMapper userMapper;
+    private final UserInfoMapper userInfo;
     private final RoleMapper roleMapper;
     private final LoginLogMapper loginLogMapper;
     private final RedisUtils redisServer;
@@ -122,6 +121,8 @@ public class AuthController {
         QueryWrapper<SysUser> wrapper = new QueryWrapper<>();
         wrapper.select("id").eq("username", user.getUsername());
         roleMapper.registerUserRole(userMapper.selectOne(wrapper).getId());
+        SysUserView userView = new SysUserView(userMapper.selectOne(wrapper).getId(),null,null);
+        userInfo.insert(userView);
         return R.ok("注册成功");
     }
 
